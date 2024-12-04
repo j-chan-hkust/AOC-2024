@@ -1,4 +1,6 @@
 from aocd import get_data, submit
+import time
+
 import numpy as np
 import re
 
@@ -77,4 +79,8 @@ def solve_part2(data):
     return sum
 
 if __name__ == "__main__":
-    main()
+    start_time = time.time()  # Record the start time
+    main()  # Call the main function
+    end_time = time.time()  # Record the end time
+    execution_time = end_time - start_time  # Calculate the execution time
+    print(f"--- {execution_time:.6f} seconds ---")  # Print the execution time
