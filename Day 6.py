@@ -81,26 +81,28 @@ def solve_part2(data):
     map = [list(datum) for datum in data.split('\n')]
     count = 0
 
+    for index in range(len(map)):
+        if '^' in map[index]:
+            start_x = index
+            start_y = map[index].index('^')
+
     for i in range (len(map)):
         for j in range(len(map[0])):
-            x, y = 0, 0
+            x, y = start_x,start_y
             dir = (-1, 0)
-
-            for index in range(len(map)):
-                if '^' in map[index]:
-                    x = i
-                    y = map[index].index('^')
 
             if x == i and y == j: # break if you replace the guard
                 continue
+            if map[x][y] == '#':
+                continue
 
-            map = [list(datum) for datum in data.split('\n')]
-            map[i][j] = '#'
+            new_map = [list(datum) for datum in data.split('\n')]
+            new_map[i][j] = '#'
 
             prev_positions = set()
 
             while True:
-                if (dir, x,y) in prev_positions:
+                if (dir,x,y) in prev_positions:
                     count+=1
                     print(i,j)
                     break
@@ -108,9 +110,9 @@ def solve_part2(data):
                     prev_positions.add((dir,x,y))
                 next_x = x + dir[0]
                 next_y = y + dir[1]
-                if next_x not in range(len(map)) or next_y not in range(len(map[0])):
+                if next_x not in range(len(new_map)) or next_y not in range(len(new_map[0])):
                     break
-                if map[next_x][next_y] == '#':
+                if new_map[next_x][next_y] == '#':
                     dir = rotate(dir)
                     continue
                 x, y = next_x, next_y
