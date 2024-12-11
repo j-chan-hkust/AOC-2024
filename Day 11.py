@@ -59,8 +59,11 @@ def solve_part1(data):
 # saved everything! including many, many replicated strings.
 # even though it made calls easier - you had to use SO much memory
 # Saving just the tree structure, of nested calls is much much more memory efficient
+# actually - using @cache for a lot of API call scripts might make them run MUCH quicker!
+# I really gotta start trying to use this!
 
-@cache
+
+@cache #in this case - the @ symbol represents syntactic sugar that helps reduce repeated calls
 def stones(c, n):
     if n==0:
         return 1
