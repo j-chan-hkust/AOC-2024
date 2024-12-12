@@ -19,7 +19,7 @@ def main():
     print(f"Part 2: {result_part2}")
 
     # Submit answers
-    #submit(result_part1, part='a', day=DAY, year=YEAR)
+    submit(result_part1, part='a', day=DAY, year=YEAR)
     #submit(result_part2, part='b', day=DAY, year=YEAR)
 
 def solve_part1(data):
