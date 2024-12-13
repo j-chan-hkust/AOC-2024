@@ -70,10 +70,10 @@ def wait_until_midnight_est():
                                 (60 - now.second))
         if seconds_until_midnight > 60:
             print(f"Waiting for midnight EST... ({seconds_until_midnight//3600}h {(seconds_until_midnight%3600)//60}m)")
-            time.sleep(60)
+            time.sleep(45)
         else:
             print(f"Almost midnight... ({seconds_until_midnight}s)")
-            time.sleep(1)
+            time.sleep(0.2)
 
 def main():
     # Get day and year
