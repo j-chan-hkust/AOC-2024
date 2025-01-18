@@ -74,11 +74,7 @@ def solutions(pattern, max_len)->int:
     if len(pattern)==0:
         return 1
     if len(pattern) == 1:
-        if pattern in towels:
-            return 1
-        else:
-            return 0
-
+        return pattern in towels
 
     sum = 0
 
@@ -90,10 +86,7 @@ def solutions(pattern, max_len)->int:
 
 def solve_part2(data):
     # Implement your solution for part 2 here
-
-    global towels
-    towels, patterns = data.split('\n\n')
-    towels = towels.split(', ')
+    _, patterns = data.split('\n\n')
     patterns = patterns.split()
     max_len = 0
     sum = 0
