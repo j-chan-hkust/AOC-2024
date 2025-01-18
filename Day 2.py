@@ -68,26 +68,38 @@ def solve_part2(data):
     reports = data.split('\n')
     sum = 0
 
+    #so essentially we're going to implement part 1, but just lazily check every possible iteration of removal if it's not safe.
+
     for report in reports:
         report = [int(item) for item in report.split()]
-        increasing = report[0]<report[-1]
-        failure = False
+        increasing = report[0] < report[-1]
+        failures = 0
         index = 0
 
-        while index<len(report)-1:
-            if not succeed(increasing, report[index], report[index+1]):
-                report.pop(index)
-                index = 0
-                while index<len(report)-1:
-                    if not succeed(increasing, report[index], report[index+1]):
-                        failure = True
-                    index+=1
+        while index < len(report) - 1:
+            if not succeed(increasing, report[index], report[index + 1]):
+                failures = 1
                 break
             index += 1
 
+        if failures < 1:
+            sum += 1
+        else:
+            for i in range(len(report)):
+                candidate = report[:i] + report[i+1:]
+                failures = 0
+                index = 0
 
-        if not failure:
-            sum+=1
+                while index < len(candidate) - 1:
+                    if not succeed(increasing, candidate[index], candidate[index + 1]):
+                        failures = 1
+                        break
+                    index += 1
+
+                if failures < 1:
+                    sum += 1
+                    break
+
 
     return sum
 
