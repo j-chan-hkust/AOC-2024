@@ -1,3 +1,5 @@
+import itertools
+
 from aocd import get_data, submit
 import time
 from collections import defaultdict, deque
@@ -62,16 +64,54 @@ def solve_part1(data):
 
     return total_price
 
+def get_corners(region):
+    corners = 0
+    for r, c in region:  # for each point in the region
+        # Check all four possible corner configurations
+        corner_checks = [
+            # Format: ((r1,c1), (r2,c2), (r3,c3)) - the three cells adjacent to corner
+            ((r+1,c), (r+1,c+1), (r,c+1)),  # bottom-right corner
+            ((r+1,c), (r+1,c-1), (r,c-1)),  # bottom-left corner
+            ((r-1,c), (r-1,c+1), (r,c+1)),  # top-right corner
+            ((r-1,c), (r-1,c-1), (r,c-1))   # top-left corner
+        ]
+
+        for p1, p2, p3 in corner_checks:
+            # All three points must either be in or out of the region for a corner
+            if (p1 in region and p3 in region):
+                if p2 not in region:
+                    corners += 1
+            elif (p1 not in region and p3 not in region):
+                corners += 1
+
+    return corners
+
+
 def solve_part2(data):
-    return "Not implemented"
+    # so we have a function that returns regions. If we can convert these points into vertices, then maybe we can calculate the number of sides?
+    grid = [list(line) for line in data.splitlines()]
+    regions = get_regions(grid)
+
+    total_price = 0
+    for char in regions:
+        for region in regions[char]:
+            print(region)
+            area = len(region)
+            sides = get_corners(region) # corners == number of sides
+            print(sides)
+            total_price += area * sides
+
+    return total_price
 
 def main():
     input_data = get_data(day=DAY, year=YEAR)
+
     result_part1 = solve_part1(input_data)
     print(f"Part 1: {result_part1}")
     result_part2 = solve_part2(input_data)
     print(f"Part 2: {result_part2}")
     submit(result_part1, part='a', day=DAY, year=YEAR)
+    submit(result_part2, part='b', day=DAY, year=YEAR)
 
 if __name__ == "__main__":
     start_time = time.time()
