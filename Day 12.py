@@ -95,10 +95,8 @@ def solve_part2(data):
     total_price = 0
     for char in regions:
         for region in regions[char]:
-            print(region)
             area = len(region)
             sides = get_corners(region) # corners == number of sides
-            print(sides)
             total_price += area * sides
 
     return total_price
