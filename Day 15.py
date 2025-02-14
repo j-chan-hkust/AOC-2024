@@ -20,7 +20,7 @@ def main():
 
     # Submit answers
     submit(result_part1, part='a', day=DAY, year=YEAR)
-    #submit(result_part2, part='b', day=DAY, year=YEAR)
+    submit(result_part2, part='b', day=DAY, year=YEAR)
 
 class Warehouse:
     def __init__(self, layout):
@@ -123,6 +123,51 @@ class Wide_Warehouse:
                     return (y, x)
         raise ValueError("No robot found in layout")
 
+    # this is only to check the validity of the up down movement, to preserve the overall structure of the original code
+    # honestly - I would like some advice on how to clean this up more, as it has a lot of duplicated logic that is not useful.
+    def can_move(self,y,x,direction):
+        dy, dx = self._get_direction_vector(direction)
+        new_y, new_x = y + dy, x + dx
+
+        # Check if move is within bounds
+        if not (0 <= new_y < self.height and 0 <= new_x < self.width):
+            return False
+
+            # If empty space, move object
+        if self.grid[new_y][new_x] == '.':
+            return True
+
+        if self.grid[new_y][new_x] == '#':
+            return False
+
+        if direction == '<' or direction == '>': # if it's moving left or right, logic is similar.
+            if self.grid[new_y][new_x] == '[' or self.grid[new_y][new_x] == ']':
+                if self.can_move(new_y, new_x, direction):
+                    # If box moved, move the pushing object
+                    return True
+        else:
+            if self.grid[new_y][new_x] == '[':
+                # get the left side and right side.
+                box_left_y, box_left_x = new_y, new_x
+                box_right_y, box_right_x = new_y, new_x+1
+
+                #check if both sides can be moved
+                if self.can_move(box_right_y,box_right_x,direction) and self.can_move(box_left_y,box_left_x,direction):
+                    return True
+                else:
+                    return False
+
+            elif self.grid[new_y][new_x] == ']':
+                # get left side and right side
+                box_left_y, box_left_x = new_y, new_x-1
+                box_right_y, box_right_x = new_y, new_x
+                if self.can_move(box_right_y, box_right_x, direction) and self.can_move(box_left_y, box_left_x, direction):
+                    return True
+                else:
+                    return False
+
+        return False
+
     def move_object(self, y, x, direction):
         """Attempt to move an object (robot or box) at position (y,x)"""
         dy, dx = self._get_direction_vector(direction)
@@ -154,31 +199,28 @@ class Wide_Warehouse:
                         self.robot_pos = (new_y, new_x)
                     return True
         else:
-            if self.grid[new_y][new_x] == '[':
-                # get the left side and right side.
-                box_left_y, box_left_x = new_y, new_x
-                box_right_y, box_right_x = new_y, new_x+1
+            if self.can_move(y,x,direction):
+                if self.grid[new_y][new_x] == '[':
+                    # get the left side and right side.
+                    box_left_y, box_left_x = new_y, new_x
+                    box_right_y, box_right_x = new_y, new_x+1
 
-                #check if both sides can be moved
-                #todo I think you can't just call the move_object function, because it will allow '[' to move up without
-                # the other side. You need to restructure it to check first that both sides are moveable, and then move.
-                if self.move_object(box_left_y, box_left_x, direction) and self.move_object(box_right_y, box_right_x, direction):
-                    self._move_to(y, x, new_y, new_x)
+                    if self.move_object(box_left_y, box_left_x, direction) and self.move_object(box_right_y, box_right_x, direction):
+                        self._move_to(y, x, new_y, new_x)
+                        if self.grid[new_y][new_x] == '@':
+                            self.robot_pos = (new_y, new_x)
+                        return True
 
-            elif self.grid[new_y][new_x] == ']':
-                # get left side and right side
-                box_left_y, box_left_x = new_y, new_x-1
-                box_right_y, box_right_x = new_y, new_x
-                # Try to move the box first
-                # if it's moving up or down, logic is different
-                # check if it's left or right side.
-                # check if the other side can be moved.
-                if self.move_object(new_y, new_x, direction):
-                    # If box moved, move the pushing object
-                    self._move_to(y, x, new_y, new_x)
-                    if self.grid[new_y][new_x] == '@':
-                        self.robot_pos = (new_y, new_x)
-                    return True
+                elif self.grid[new_y][new_x] == ']':
+                    # get left side and right side
+                    box_left_y, box_left_x = new_y, new_x-1
+                    box_right_y, box_right_x = new_y, new_x
+
+                    if self.move_object(box_left_y, box_left_x, direction) and self.move_object(box_right_y, box_right_x, direction):
+                        self._move_to(y, x, new_y, new_x)
+                        if self.grid[new_y][new_x] == '@':
+                            self.robot_pos = (new_y, new_x)
+                        return True
 
         return False
 
@@ -202,8 +244,9 @@ class Wide_Warehouse:
         total = 0
         for y in range(self.height):
             for x in range(self.width):
-                if self.grid[y][x] == 'O':
+                if self.grid[y][x] == '[':
                     total += (100 * y + x)
+
         return total
 
     def __str__(self):
